@@ -1,1 +1,1 @@
-<?php echo "Hello, Docker-Git World!"; ?>
+<?php echo "Hello, Docker-Git World!" . "差分確認"; ?>
