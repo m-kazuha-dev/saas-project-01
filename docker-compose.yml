@@ -1,9 +1,12 @@
 services:
-  php-server:
-    image: php:8.3-cli
+  app:
+    build: .
     volumes:
-      - .:/app
-    working_dir: /app
-    command: php -S 0.0.0.0:8000 src/index.php
+      - ./src:/var/www/html  # srcフォルダをコンテナのWeb公開場所にマウント
     ports:
-      - "8000:8000"
+      - "8080:80"            # これでブラウザからアクセス可能に
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: test_db
+      MYSQL_ROOT_PASSWORD: root
