@@ -2,11 +2,24 @@ services:
   app:
     build: .
     volumes:
-      - ./src:/var/www/html  # srcフォルダをコンテナのWeb公開場所にマウント
+      - ./src:/var/www/html
     ports:
-      - "8080:80"            # これでブラウザからアクセス可能に
+      - "8080:80"
+    networks:
+      - app-network  # ここで指定
+
   db:
     image: mysql:8.0
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     environment:
-      MYSQL_DATABASE: test_db
       MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+
+networks:
+  app-network:       # ここで定義
+    driver: bridge
