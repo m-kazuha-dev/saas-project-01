@@ -37,6 +37,7 @@ $employees = $pdo->query('SELECT id, name FROM employees')->fetchAll(PDO::FETCH_
         <?php foreach ($employees as $row): ?>
             <li>
                 <?= htmlspecialchars($row['name']) ?>
+                <a href="edit.php?id=<?= $row['id'] ?>">編集</a>
                 <a href="?delete_id=<?= $row['id'] ?>" onclick="return confirm('本当に削除しますか？')">削除</a>
             </li>
         <?php endforeach; ?>
