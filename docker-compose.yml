@@ -1,12 +1,14 @@
 services:
   app:
-    build: .
+    build: 
+      context: .
+      dockerfile: docker/php/Dockerfile # Dockerfileの正確なパスを指定
     volumes:
       - ./src:/var/www/html
     ports:
       - "8080:80"
     networks:
-      - app-network  # ここで指定
+      - app-network
 
   db:
     image: mysql:8.0
@@ -21,5 +23,5 @@ services:
       - app-network
 
 networks:
-  app-network:       # ここで定義
+  app-network:
     driver: bridge
