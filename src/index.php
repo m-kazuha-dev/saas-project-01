@@ -4,7 +4,12 @@ $pdo = new PDO($dsn, 'root', 'root', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTIO
 
 // 1. 削除処理
 if (isset($_GET['delete_id'])) {
-    $stmt = $pdo->prepare("DELETE FROM employees WHERE id = ?");
+    /* [税務・課税ドメインの視点を反映]
+       退職や削除があった場合も、過年度の税額修正や過去の計算根拠を
+       遡って確認（エビデンス確認）できるよう、データを物理消去せず
+       「無効フラグ」として残す論理削除を採用
+    */
+    $stmt = $pdo->prepare("UPDATE employees SET deleted_at = NOW() WHERE id = ?");
     $stmt->execute([$_GET['delete_id']]);
     header('Location: ' . $_SERVER['PHP_SELF']);
     exit;
@@ -18,8 +23,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-// 3. 一覧取得（重要：id も SELECT するように変更！）
-$employees = $pdo->query('SELECT id, name FROM employees')->fetchAll(PDO::FETCH_ASSOC);
+// 3. 一覧取得
+/* [データの整合性保護]
+   画面上の「従業員一覧」には、論理削除されていない（有効な）従業員のみを抽出して表示
+*/
+$employees = $pdo->query('SELECT id, name FROM employees WHERE deleted_at IS NULL')->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
